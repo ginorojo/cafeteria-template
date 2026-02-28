@@ -70,7 +70,7 @@ export default function Home() {
     {
       id: "1",
       title: "Espresso Imperial",
-      price: "$4.50",
+      price: "$4.500",
       description:
         "Extracción doble de grano de altura, notas a cacao y nuez. Servido en cerámica artesanal.",
       imageUrl:
@@ -80,7 +80,7 @@ export default function Home() {
     {
       id: "2",
       title: "Repostería del Convento",
-      price: "$3.80",
+      price: "$3.800",
       description:
         "Recetas tradicionales: Medialunas de mantequilla o tarta de almendras horneada en el día.",
       imageUrl:
@@ -90,7 +90,7 @@ export default function Home() {
     {
       id: "3",
       title: "Cold Brew Colonial",
-      price: "$5.20",
+      price: "$5.200",
       description:
         "Infusión en frío por 16 horas, refrescante, ligero y con dulzura natural. Ideal para las tardes.",
       imageUrl:
@@ -245,7 +245,7 @@ export default function Home() {
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.1 }} // Cambiado a once: true
-                  transition={{ duration: 0.3, delay: index * 0.2 }}
+                  transition={{ duration: 0.6, delay: index * 0.2 }}
                   className="border border-stone-200 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all group bg-white flex flex-col"
                 >
                   <div className="relative h-64 bg-stone-100 overflow-hidden">
