@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react"; // Añadimos los hooks de React
+import { useState, useEffect } from "react";
 import { Playfair_Display, Inter } from "next/font/google";
 import { motion } from "framer-motion";
 
@@ -35,23 +35,29 @@ interface NavLink {
 export default function Home() {
   
   // --- LÓGICA DE REINICIO DE ANIMACIONES ---
-  // Este estado cambiará cada vez que el usuario vuelva al principio de la página
   const [animationKey, setAnimationKey] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
     let isAtTop = true;
     const handleScroll = () => {
-      // Si subimos hasta arriba (menos de 10px de scroll)
       if (window.scrollY < 10 && !isAtTop) {
         isAtTop = true;
-        setAnimationKey((prev) => prev + 1); // Forzamos el reinicio de Framer Motion
+        setAnimationKey((prev) => prev + 1); 
       } else if (window.scrollY > 50 && isAtTop) {
         isAtTop = false;
       }
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+        window.removeEventListener("scroll", handleScroll);
+        window.removeEventListener("resize", checkMobile);
+    }
   }, []);
 
   // --- CONFIGURACIÓN DE WHATSAPP ---
@@ -110,7 +116,14 @@ export default function Home() {
             <div className="w-8 h-8 border-2 border-[#c69e69] rounded-full flex items-center justify-center font-serif text-xl">
               C
             </div>
-            <a href="#">
+            {/* CORRECCIÓN: Agregado onClick para subir suavemente sin romper la animación */}
+            <a 
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            >
                 <h1 className="font-serif text-3xl font-bold tracking-tight">
               Cafe <span className="font-light">Colonial</span>
             </h1>
@@ -123,6 +136,13 @@ export default function Home() {
                 href={link.href}
                 target={link.external ? "_blank" : "_self"}
                 rel={link.external ? "noopener noreferrer" : ""}
+                // Lo mismo para el enlace "Inicio"
+                onClick={(e) => {
+                  if(link.href === "#") {
+                    e.preventDefault();
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }
+                }}
                 className="hover:text-white transition-colors border-b-2 border-transparent hover:border-secondary pb-1"
               >
                 {link.label}
@@ -143,10 +163,10 @@ export default function Home() {
           <div className="absolute inset-0 bg-primary/30"></div>
           
           <motion.div 
-            key={`hero-${animationKey}`} // Vinculamos la animación al reset global
+            key={`hero-${animationKey}`}
             initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }} // Cambiado a once: true
+            // CORRECCIÓN: Cambiado de 'whileInView' a 'animate'
+            animate={{ opacity: 1, y: 0 }} 
             transition={{ duration: 1 }}
             className="relative z-10 container mx-auto px-6 mt-20"
           >
@@ -186,7 +206,7 @@ export default function Home() {
               key={`hist-txt-${animationKey}`}
               initial={{ opacity: 0, x: -100 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.3 }} // Cambiado a once: true
+              viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.8 }}
               className="space-y-6"
             >
@@ -206,7 +226,7 @@ export default function Home() {
               key={`hist-img-${animationKey}`}
               initial={{ opacity: 0, x: 100 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.3 }} // Cambiado a once: true
+              viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.8 }}
               className="aspect-4/3 rounded-2xl shadow-2xl flex items-center justify-center border-5 border-bg-primary/20 overflow-hidden"
             >
@@ -226,7 +246,7 @@ export default function Home() {
               key={`menu-tit-${animationKey}`}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }} // Cambiado a once: true
+              viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6 }}
               className="text-center mb-16 space-y-2"
             >
@@ -242,17 +262,17 @@ export default function Home() {
               {menuItems.map((item, index) => (
                 <motion.div
                   key={`menu-item-${item.id}-${animationKey}`}
-                  initial={{ opacity: 0, y: 50 }}
+                  initial={{ opacity: 0, y: isMobile ? 20 : 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.1 }} // Cambiado a once: true
-                  transition={{ duration: 0.6, delay: index * 0.2 }}
-                  className="border border-stone-200 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all group bg-white flex flex-col"
+                  viewport={{ once: true, amount: 0.1 }}
+                  transition={{ duration: 0.5, delay: isMobile ? 0 : index * 0.2 }}
+                  className="border border-stone-200 rounded-2xl overflow-hidden shadow-md md:hover:shadow-xl transition-shadow group bg-white flex flex-col"
                 >
                   <div className="relative h-64 bg-stone-100 overflow-hidden">
                     <img
                       src={item.imageUrl}
                       alt={item.title}
-                      className={`object-cover w-full h-full group-hover:scale-105 transition-transform duration-300 ${item.category === "reposteria" ? "brightness-75" : ""}`}
+                      className={`object-cover w-full h-full transition-transform duration-300 md:group-hover:scale-105 ${item.category === "reposteria" ? "brightness-75" : ""}`}
                     />
                     {item.category === "reposteria" && (
                       <div className="absolute inset-0 flex items-center justify-center text-white text-center p-8 z-10 bg-black/20 pointer-events-none">
@@ -297,7 +317,7 @@ export default function Home() {
               key={`loc-${animationKey}`}
               initial={{ opacity: 0, x: -150 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.2 }} // Cambiado a once: true
+              viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.8, type: "spring", bounce: 0.2 }}
               className="grid lg:grid-cols-2 gap-12 items-center"
             >
@@ -353,7 +373,7 @@ export default function Home() {
       <footer className="bg-black text-secondary/60 py-12 text-center text-sm">
         <div className="container mx-auto px-6 space-y-4">
           <p className="font-serif text-3xl font-bold text-secondary mb-6">
-            Coffea Colonial
+            Cafe Colonial
           </p>
           <p>
             © {new Date().getFullYear()} Todos los derechos reservados.
