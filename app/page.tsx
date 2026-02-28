@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react"; // Añadimos los hooks de React
 import { Playfair_Display, Inter } from "next/font/google";
 import { motion } from "framer-motion";
 
@@ -28,13 +29,32 @@ interface MenuItem {
 interface NavLink {
   label: string;
   href: string;
-  external?: boolean; // Añadido para saber si debemos abrir en otra pestaña
+  external?: boolean; 
 }
 
 export default function Home() {
   
+  // --- LÓGICA DE REINICIO DE ANIMACIONES ---
+  // Este estado cambiará cada vez que el usuario vuelva al principio de la página
+  const [animationKey, setAnimationKey] = useState(0);
+
+  useEffect(() => {
+    let isAtTop = true;
+    const handleScroll = () => {
+      // Si subimos hasta arriba (menos de 10px de scroll)
+      if (window.scrollY < 10 && !isAtTop) {
+        isAtTop = true;
+        setAnimationKey((prev) => prev + 1); // Forzamos el reinicio de Framer Motion
+      } else if (window.scrollY > 50 && isAtTop) {
+        isAtTop = false;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   // --- CONFIGURACIÓN DE WHATSAPP ---
-  // Reemplaza este número por el de la cafetería (ej: 56912345678)
   const NUMERO_WHATSAPP = "56912345678"; 
   const MENSAJE_WHATSAPP = encodeURIComponent("hola quisiera hacer un pedido");
   const LINK_WHATSAPP = `https://wa.me/${NUMERO_WHATSAPP}?text=${MENSAJE_WHATSAPP}`;
@@ -43,7 +63,7 @@ export default function Home() {
     { label: "Inicio", href: "#" },
     { label: "Nuestro Café", href: "#menu" },
     { label: "Ubicación", href: "#ubicacion" },
-    { label: "Reservar", href: LINK_WHATSAPP, external: true }, // Actualizado al Link de WhatsApp
+    { label: "Reservar", href: LINK_WHATSAPP, external: true }, 
   ];
 
   const menuItems: MenuItem[] = [
@@ -123,9 +143,10 @@ export default function Home() {
           <div className="absolute inset-0 bg-primary/30"></div>
           
           <motion.div 
+            key={`hero-${animationKey}`} // Vinculamos la animación al reset global
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.3 }}
+            viewport={{ once: true, amount: 0.3 }} // Cambiado a once: true
             transition={{ duration: 1 }}
             className="relative z-10 container mx-auto px-6 mt-20"
           >
@@ -162,9 +183,10 @@ export default function Home() {
           <div className="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
             
             <motion.div 
+              key={`hist-txt-${animationKey}`}
               initial={{ opacity: 0, x: -100 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
+              viewport={{ once: true, amount: 0.3 }} // Cambiado a once: true
               transition={{ duration: 0.8 }}
               className="space-y-6"
             >
@@ -181,9 +203,10 @@ export default function Home() {
             </motion.div>
 
             <motion.div 
+              key={`hist-img-${animationKey}`}
               initial={{ opacity: 0, x: 100 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
+              viewport={{ once: true, amount: 0.3 }} // Cambiado a once: true
               transition={{ duration: 0.8 }}
               className="aspect-4/3 rounded-2xl shadow-2xl flex items-center justify-center border-5 border-bg-primary/20 overflow-hidden"
             >
@@ -200,9 +223,10 @@ export default function Home() {
         <section id="menu" className="py-24 bg-white">
           <div className="container mx-auto px-6">
             <motion.div 
+              key={`menu-tit-${animationKey}`}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
+              viewport={{ once: true, amount: 0.3 }} // Cambiado a once: true
               transition={{ duration: 0.6 }}
               className="text-center mb-16 space-y-2"
             >
@@ -217,10 +241,10 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-8">
               {menuItems.map((item, index) => (
                 <motion.div
-                  key={item.id}
+                  key={`menu-item-${item.id}-${animationKey}`}
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false, amount: 0.1 }}
+                  viewport={{ once: true, amount: 0.1 }} // Cambiado a once: true
                   transition={{ duration: 0.3, delay: index * 0.2 }}
                   className="border border-stone-200 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all group bg-white flex flex-col"
                 >
@@ -270,9 +294,10 @@ export default function Home() {
         <section id="ubicacion" className="bg-primary text-secondary py-24 overflow-hidden">
           <div className="container mx-auto px-6">
             <motion.div 
+              key={`loc-${animationKey}`}
               initial={{ opacity: 0, x: -150 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.2 }} // Cambiado a once: true
               transition={{ duration: 0.8, type: "spring", bounce: 0.2 }}
               className="grid lg:grid-cols-2 gap-12 items-center"
             >
@@ -359,7 +384,6 @@ export default function Home() {
         className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-2xl transition-colors flex items-center justify-center hover:bg-[#1ebe57]"
         aria-label="Contactar por WhatsApp"
       >
-        {/* SVG Icono Oficial de WhatsApp */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="32"
