@@ -67,6 +67,7 @@ export default function Home() {
 
   const navLinks: NavLink[] = [
     { label: "Inicio", href: "#" },
+    { label: "Nosotros", href: "#nosotros" },
     { label: "Nuestro Café", href: "#menu" },
     { label: "Ubicación", href: "#ubicacion" },
     { label: "Reservar", href: LINK_WHATSAPP, external: true }, 
@@ -199,7 +200,7 @@ export default function Home() {
         </section>
 
         {/* --- 3. NUESTRA HISTORIA --- */}
-        <section className="bg-secondary py-24 text-primary overflow-hidden">
+        <section id="nosotros" className="bg-secondary py-24 text-primary overflow-hidden">
           <div className="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
             
             <motion.div 
